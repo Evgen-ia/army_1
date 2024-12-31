@@ -55,6 +55,18 @@ const TaskForm = () => {
     }
   };
 
+  const handleDelete = async (taskId) => {
+    try {
+      const response = await axios.delete(`http://localhost:8000/tasks/${taskId}`);
+      setMessage(response.data.message);
+
+      // Remove the deleted task from the list
+      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
+    } catch (error) {
+      setMessage(`Error: ${error.response?.data?.error || 'Something went wrong'}`);
+    }
+  };
+
   return (
     <div>
       <h2>Create a New Task</h2>
@@ -100,6 +112,7 @@ const TaskForm = () => {
             {expandedTask === task._id && (
               <div style={{ marginLeft: '20px', marginTop: '10px' }}>
                 <p>{task.description}</p>
+                <button onClick={() => handleDelete(task._id)}>Delete</button>
               </div>
             )}
           </li>
