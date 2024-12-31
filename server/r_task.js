@@ -37,19 +37,19 @@ router.post('/', async (req, res) => {
  
 module.exports = router;
 
-// router.delete('/tasks/:id', async (req, res) => {
-//   try {
-//     const { id } = req.params; // Get the task ID from the URL parameter
-//     const result = await mongoose.connection.db.collection("tasks").deleteOne({ _id: mongoose.Types.ObjectId(id) });
+router.delete('/tasks/:id', async (req, res) => {
+  try {
+    const { id } = req.params; // Get the task ID from the URL parameter
+    const result = await mongoose.connection.db.collection("tasks").deleteOne({ _id: mongoose.Types.ObjectId(id) });
 
-//     if (result.deletedCount === 0) {
-//       return res.status(404).json({ error: 'Task not found' });
-//     }
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
 
-//     res.status(200).json({ message: 'Task deleted successfully' });
-//   } catch (err) {
-//     res.status(500).json({ error: 'Something went wrong', details: err.message });
-//   }
-// });
+    res.status(200).json({ message: 'Task deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Something went wrong', details: err.message });
+  }
+});
 
-// module.exports = router;
+module.exports = router;
