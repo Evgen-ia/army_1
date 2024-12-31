@@ -67,6 +67,26 @@ const TaskForm = () => {
     }
   };
 
+  // Handle the toggle of completed task
+  const handleToggleCompleted = async (taskId, currentStatus) => {
+    try {
+      const newStatus = !currentStatus;
+      const response = await axios.patch(`http://localhost:8000/tasks/${taskId}/completed`, {
+        completed: newStatus,
+      });
+
+      // Update the task status locally in the UI
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task._id === taskId ? { ...task, completed: newStatus } : task
+        )
+      );
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage(`Error: ${error.response?.data?.error || 'Something went wrong'}`);
+    }
+  };
+
   return (
     <div>
       <h2>Create a New Task</h2>
@@ -89,16 +109,6 @@ const TaskForm = () => {
             required
           />
         </div>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={completed}
-              onChange={(e) => setCompleted(e.target.checked)}
-            />
-            Completed
-          </label>
-        </div>
         <button type="submit">Add Task</button>
       </form>
       {message && <p>{message}</p>}
@@ -108,7 +118,22 @@ const TaskForm = () => {
       <ul>
         {tasks.map((task) => (
           <li key={task._id} onClick={() => handleTaskClick(task._id)}>
-            <strong>{task.name}</strong>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  border: '2px solid #000',
+                  cursor: 'pointer',
+                  backgroundColor: task.completed ? '#4CAF50' : '#fff',
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleCompleted(task._id, task.completed);
+                }}
+              />
+              <strong>{task.name}</strong>
+            </div>
             {expandedTask === task._id && (
               <div style={{ marginLeft: '20px', marginTop: '10px' }}>
                 <p>{task.description}</p>

@@ -83,4 +83,28 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+router.patch('/:id/completed', async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const { completed } = req.body; // Expecting a boolean value for "completed"
+
+    const taskCollection = mongoose.connection.db.collection('tasks');
+
+    // Correctly instantiate ObjectId with `new` keyword
+    const result = await taskCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(taskId) }, // Fix here: use `new mongoose.Types.ObjectId()`
+      { $set: { completed } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    res.status(200).json({ message: 'Task updated successfully' });
+  } catch (err) {
+    res.status(500).send({ error: 'Something went wrong', details: err.message });
+  }
+});
+
+
 module.exports = router;
